@@ -1,4 +1,3 @@
-
 # Botgate_bypass
 
 简介：绕过瑞数waf的动态验证机制，实现请求包重放，可针对不同网站使用。
@@ -170,29 +169,21 @@ a=1&b=2&c=3
 
 2、手动在浏览器控制台执行js代码
 
-##### 小程序、微信浏览器
+##### 小程序、微信浏览器、模拟器
 
 1、如果访问网站有附带js请求或html请求，手动修改响应数据，将js代码放进去
 
 2、使用WeChatOpenDevTools开启调试，在控制台执行js代码
 
-3、Burp上游增加一层minmproxy，将每次的js或html响应中增加js代码
+3、Burp上游增加一层minmproxy，将每次的js或html响应中增加js代码（建议）
 
+```
 编辑mitmdump.py，将域名替换为目标网站或填*
+
 执行【mitmdump -p 8081 -s mitmdump.py】命令，将Burp上游代理到8081端口
+
 这样每次访问js或html都自动执行【浏览器端.js】的内容
-
-##### 模拟器
-
-1、如果访问网站有附带js请求或html请求，手动修改响应数据，将js代码放进去
-
-2、使用WeChatOpenDevTools开启调试，在控制台执行js代码
-
-3、Burp上游增加一层minmproxy，将每次的js或html响应中增加js代码
-
-编辑mitmdump.py，将域名替换为目标网站或填*
-执行【mitmdump -p 8081 -s mitmdump.py】命令，将Burp上游代理到8081端口
-这样每次访问js或html都自动执行【浏览器端.js】的内容
+```
 
 注意：非本机环境需要将【浏览器端.js】中的第一行地址修改
 
@@ -209,4 +200,5 @@ a=1&b=2&c=3
 # 更新日志
 
 ##### 2024年4月12日
+
 版本发布
