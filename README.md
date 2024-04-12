@@ -176,7 +176,11 @@ a=1&b=2&c=3
 
 2、使用WeChatOpenDevTools开启调试，在控制台执行js代码
 
-3、Burp上游增加一层minmproxy，将每次的js或html响应中增加js代码（预计下版本增加脚本）
+3、Burp上游增加一层minmproxy，将每次的js或html响应中增加js代码
+
+编辑mitmdump.py，将域名替换为目标网站或填*
+执行【mitmdump -p 8081 -s mitmdump.py】命令，将Burp上游代理到8081端口
+这样每次访问js或html都自动执行【浏览器端.js】的内容
 
 ##### 模拟器
 
@@ -184,7 +188,11 @@ a=1&b=2&c=3
 
 2、使用WeChatOpenDevTools开启调试，在控制台执行js代码
 
-3、Burp上游增加一层minmproxy，将每次的js或html响应中增加js代码（预计下版本增加脚本）
+3、Burp上游增加一层minmproxy，将每次的js或html响应中增加js代码
+
+编辑mitmdump.py，将域名替换为目标网站或填*
+执行【mitmdump -p 8081 -s mitmdump.py】命令，将Burp上游代理到8081端口
+这样每次访问js或html都自动执行【浏览器端.js】的内容
 
 注意：非本机环境需要将【浏览器端.js】中的第一行地址修改
 
