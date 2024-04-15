@@ -113,18 +113,15 @@ function socket_start(){
                 });
             } catch (error) {
                 socket121.send(varChars + '------0------0------0');
-                console.error("Error processing new data：", error);
             }
         }
     };
 }'''
-
     content_type = flow.response.headers.get("Content-Type", "").lower()
 
-    # # 会出现中文乱码，先注释后续处理
-    # if content_type.startswith("application/javascript"):
-    #     # 如果响应的 Content-Type 是 JavaScript
-    #     flow.response.text += jscode
+    if content_type.startswith("application/javascript"):
+        # 如果响应的 Content-Type 是 JavaScript
+        flow.response.text += jscode
 
     if content_type.startswith("text/html"):
         # 如果响应的 Content-Type 是 HTML
