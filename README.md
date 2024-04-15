@@ -17,7 +17,7 @@
       * [使用案例](#使用案例)
             * [普通GET请求](#普通get请求)
             * [json格式的POST请求](#json格式的post请求)
-            * [xfrom格式的POST请求](#xfrom格式的post请求)
+            * [xform格式的POST请求](#xform格式的post请求)
             * [formdata格式的请求](#formdata格式的请求)
             * [带自定义Header头的请求](#带自定义header头的-请求)
       * [不同访问环境的使用](#不同访问环境的使用)
@@ -138,7 +138,7 @@ URL（例：https://www.baidu.com）
 
 ```
 可选值：
-xfrom			等同于application/x-www-form-urlencoded
+xform			等同于application/x-www-form-urlencoded
 json			等同于application/json	（注意：选该类型时，传参数五时需要在URL中传参，详见后面例子）
 formdata		等同于multipart/form-data
 ```
@@ -161,7 +161,7 @@ A: zxss|||B: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibm
 ##### 参数五：传输的数据
 
 ```
-xfrom例子：
+xform例子：
 a=1&b=2&c=3
 json例子：（传该类型参数时需要放在URL上）
 {"a":"1","b":"2","c":"3"}
@@ -187,7 +187,7 @@ a=1&b=2&c=3
 
 ![image-20240412103745227](./assets/image-20240412103745227.png)
 
-##### xfrom格式的POST请求
+##### xform格式的POST请求
 
 ![image-20240412103156012](./assets/image-20240412103156012.png)
 
