@@ -46,7 +46,7 @@ function socket_start(){
                         }
                         fetchOptions["body"] = JSON.stringify(str_str);
                         headers["Content-Type"] = 'application/json';
-                    } else if (newdata3 === 'xfrom') {
+                    } else if (newdata3 === 'xform') {
                         const params = new URLSearchParams();
                         if (str_str !== undefined && str_str !== null && str_str !== '') {
                             const keyValuePairs = str_str.split('&');
