@@ -1,4 +1,0 @@
-Flask==2.0.3
-websockets==10.4
-Werkzeug==2.3.7
-mitmproxy==9.0.1
