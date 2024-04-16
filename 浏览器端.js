@@ -16,7 +16,7 @@ function socket_start(){
     socket121.onmessage = function(event) {
         const receivedMessage = event.data;
 
-        const parts = receivedMessage.split("------");
+        const parts = receivedMessage.split("------------");
 
         const varChars = parts[0]
 
@@ -25,7 +25,11 @@ function socket_start(){
         if (parts.length == 2) {
             try {
                 const [newdata1, newdata2, newdata3, newdata4, newdata5] = reqdata.split("[][][][][][]");
-
+                console.log(newdata1);
+                console.log(newdata2);
+                console.log(newdata3);
+                console.log(newdata4);
+                console.log(newdata5);
                 const fetchOptions = {};
                 const headers = {};
                 if (newdata5 !== undefined && newdata5 !== null && newdata5 !== '') {
@@ -95,13 +99,13 @@ function socket_start(){
                     });
                 })
                 .then(({ statusCode, headersString, xydata }) => {
-                    socket121.send(varChars + '------' + statusCode + '------' + headersString + '------' + xydata);
+                    socket121.send(varChars + '------------' + statusCode + '------------' + headersString + '------------' + xydata);
                 })
                 .catch(error => {
-                    socket121.send(varChars + '------0------0------0');
+                    socket121.send(varChars + '------------0------------0------------0');
                 });
             } catch (error) {
-                socket121.send(varChars + '------0------0------0');
+                socket121.send(varChars + '------------0------------0------------0');
                 console.error("Error processing new data：", error);
             }
         }

@@ -11,6 +11,7 @@ import asyncio
 import websockets
 from flask import Flask, request, jsonify, make_response
 from threading import Thread
+from urllib.parse import unquote
 import time
 import random
 import string
@@ -32,7 +33,7 @@ def req_handle(verChar):
         except:
             hheader = ""
         if htype == "json":
-            hdata = request.args.get("data")
+            hdata = unquote(request.query_string.decode('utf-8')[5:])
         else:
             hdata = request.get_json()["data"]
         data = "{}[][][][][][]{}[][][][][][]{}[][][][][][]{}[][][][][][]{}".format(hmethod, hurl, htype, hdata, hheader)
@@ -43,7 +44,7 @@ def req_handle(verChar):
         print("Content-type：{}".format(htype))
         print("Headers：{}".format(hheader))
         print("Data：{}".format( hdata))
-        data = verChar + "------" + str(data)
+        data = verChar + "------------" + str(data)
         return data
     except:
         print("发送给web客户端的消息：\ndata数据错误")
@@ -77,7 +78,7 @@ def receive_data():
     start_time = time.time()
     while time.time() - start_time < 2:
         try:
-            messages1 = message.split("------")
+            messages1 = message.split("------------")
             newmessages0 = messages1[0]     # 返回的校验码
             newmessages1 = messages1[1]     # 返回的状态码
             newmessages2 = messages1[2]     # 返回的响应头

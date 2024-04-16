@@ -2,6 +2,9 @@ from mitmproxy import http
 import asyncio
 import aiohttp
 import time
+from werkzeug.formparser import parse_form_data
+from werkzeug.datastructures import MultiDict
+from io import BytesIO
 
 
 flag_req = None
@@ -24,7 +27,7 @@ function socket_start(){
     socket121.onmessage = function(event) {
         const receivedMessage = event.data;
 
-        const parts = receivedMessage.split("------");
+        const parts = receivedMessage.split("------------");
 
         const varChars = parts[0]
 
@@ -103,17 +106,28 @@ function socket_start(){
                     });
                 })
                 .then(({ statusCode, headersString, xydata }) => {
-                    socket121.send(varChars + '------' + statusCode + '------' + headersString + '------' + xydata);
+                    socket121.send(varChars + '------------' + statusCode + '------------' + headersString + '------------' + xydata);
                 })
                 .catch(error => {
-                    socket121.send(varChars + '------0------0------0');
+                    socket121.send(varChars + '------------0------------0------------0');
                 });
             } catch (error) {
-                socket121.send(varChars + '------0------0------0');
+                socket121.send(varChars + '------------0------------0------------0');
             }
         }
     };
 }'''
+
+def parse_multipart_data(data, content_type):
+    environ = {
+        'REQUEST_METHOD': 'POST',
+        'CONTENT_TYPE': content_type,
+        'wsgi.input': BytesIO(data.encode()),
+        'CONTENT_LENGTH': str(len(data.encode()))
+    }
+    stream, form, files = parse_form_data(environ)
+    params = '&'.join([f"{key}={value}" for key, value in form.items()])
+    return params
 
 
 class CustomResponse:
@@ -142,7 +156,12 @@ class CustomResponse:
             data2 = ""
             reqtype = "xform"
         elif "multipart/form-data" in content_type:
-            data1 = flow.request.text
+            if "form-data" not in str(flow.request.text):
+                data1 = ""
+            else:
+                content_type = 'multipart/form-data; boundary=' + flow.request.text.splitlines()[0].replace("------", "----")
+                # 解析数据
+                data1 = parse_multipart_data(flow.request.text, content_type)
             data2 = ""
             reqtype = "formdata"
         else:
@@ -159,7 +178,7 @@ class CustomResponse:
         }
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.post("http://127.0.0.1:3000/api?data=" + data2,
+                async with session.post("http://127.0.0.1:3000/api?data=" + data2.replace("#", "%23"),
                                         headers={"Content-Type": "application/json;charset=UTF-8"},
                                         json=burp0_json) as response:
                     aa = http.Headers()
