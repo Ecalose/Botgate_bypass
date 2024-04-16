@@ -138,11 +138,11 @@ class CustomResponse:
             data1 = ""
             reqtype = "json"
         elif "application/x-www-form-urlencoded" in content_type:
-            data1 = flow.request.urlencoded_form
+            data1 = flow.request.text
             data2 = ""
             reqtype = "xform"
         elif "multipart/form-data" in content_type:
-            data1 = flow.request.multipart_form
+            data1 = flow.request.text
             data2 = ""
             reqtype = "formdata"
         else:
@@ -157,7 +157,6 @@ class CustomResponse:
             "type": reqtype,
             "url": url
         }
-
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.post("http://127.0.0.1:3000/api?data=" + data2,
