@@ -93,19 +93,11 @@ def receive_data():
                 if newmessages2 == "0" and newmessages3 == "0":
                     return "网站访问失败，请检查\n1、URL是否正确！\n2、是否存在跨域访问\n3、网站是否能正常访问"
                 newheaders = json.loads(newmessages2)
-                if 'content-type' in map(str.lower, newheaders.keys()) and 'application/json' in newheaders["content-type"]:
-                    response_data = json.loads(newmessages3)
-                    response = jsonify(response_data)
-                    for key, value in newheaders.items():
-                        response.headers[key] = value
-                    response.status_code = int(newmessages1)
-                    print(response.data)
-                    return response
-                else:
-                    response = make_response(newmessages3, int(newmessages1))
-                    for key, value in newheaders.items():
-                        response.headers[key] = value
-                    return response
+
+                response = make_response(newmessages3, int(newmessages1))
+                for key, value in newheaders.items():
+                    response.headers[key] = value
+                return response
         except:
             time.sleep(0.1)
     print("发送给web客户端的消息：\n发送给了ws客户端，但是没有返回！\n请检查：\n1、网站访问时间是否超过2秒\n2、ws客户端是否断开连接")
