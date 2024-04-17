@@ -50,6 +50,8 @@ python3环境
 注意：版本不能过低（会有未知BUG）
 ```
 
+装完三方库后，需要安装C:\Users\【用户名】\mitmproxy目录中mitmproxy-ca-cert.cer证书
+
 ### 使用方式
 
 #### 1、启动server程序
