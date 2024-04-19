@@ -58,15 +58,11 @@ function socket_start(){
                         fetchOptions["body"] = JSON.stringify(str_str);
                         headers["Content-Type"] = 'application/json';
                     } else if (newdata3 === 'xform') {
-                        const params = new URLSearchParams();
+                        let queryString = '';
                         if (str_str !== undefined && str_str !== null && str_str !== '') {
-                            const keyValuePairs = str_str.split('&');
-                            keyValuePairs.forEach(keyValue => {
-                                const [key, value] = keyValue.split('=');
-                                params.append(key, value);
-                            });
+                            queryString = str_str;
                         }
-                        fetchOptions["body"] = params;
+                        fetchOptions["body"] = queryString;
                         headers["Content-Type"] = 'application/x-www-form-urlencoded'
                     } else if (newdata3 === 'formdata') {
                         const formData = new FormData();
