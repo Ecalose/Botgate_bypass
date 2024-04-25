@@ -67,6 +67,18 @@ function socket_start(){
                     });
                 })
                 .then(({ statusCode, headersString, xydata }) => {
+                    var encoder = new TextEncoder();
+                    var encodedUint8Array = encoder.encode(xydata);
+                    var xydata = arrayBufferToBase64(encodedUint8Array);
+                    function arrayBufferToBase64(arrayBuffer) {
+                        var binary = '';
+                        var bytes = new Uint8Array(arrayBuffer);
+                        var len = bytes.byteLength;
+                        for (var i = 0; i < len; i++) {
+                            binary += String.fromCharCode(bytes[i]);
+                        }
+                        return binary;
+                    }
                     socket121.send(btoa(varChars + '------------' + btoa(statusCode) + '------------' + btoa(headersString) + '------------' + btoa(xydata)));
                 })
                 .catch(error => {
