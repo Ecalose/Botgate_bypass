@@ -7,6 +7,7 @@
 # @IDE     : PyCharm
 
 import json
+import base64
 import asyncio
 import websockets
 from flask import Flask, request, jsonify, make_response
@@ -27,24 +28,29 @@ def req_handle(verChar):
     try:
         hmethod = request.get_json()["method"]
         hurl = request.get_json()["url"]
+        hurl = base64.b64decode(hurl).decode()
         htype = request.get_json()["type"]
         try:
             hheader = request.get_json()["header"]
+            hheader = base64.b64decode(hheader).decode()
         except:
             hheader = ""
-        if htype == "json":
-            hdata = unquote(request.query_string.decode('utf-8')[5:])
-        else:
-            hdata = request.get_json()["data"]
-        data = "{}[][][][][][]{}[][][][][][]{}[][][][][][]{}[][][][][][]{}".format(hmethod, hurl, htype, hdata, hheader)
+        hdata = request.get_json()["data"]
+        data = "{}[][][][][][]{}[][][][][][]{}[][][][][][]{}[][][][][][]{}".format(
+            base64.b64encode(hmethod.encode()).decode(),
+            base64.b64encode(hurl.encode()).decode(),
+            base64.b64encode(htype.encode()).decode(),
+            hdata,
+            base64.b64encode(hheader.encode()).decode()
+        )
         print("请求信息：")
-        # print("校验码：" + verChar)
         print("Method：{}".format(hmethod))
         print("URL：{}".format(hurl))
         print("Content-type：{}".format(htype))
         print("Headers：{}".format(hheader))
-        print("Data：{}".format( hdata))
+        print("Data：{}".format(base64.b64decode(hdata).decode()))
         data = verChar + "------------" + str(data)
+        data = base64.b64encode(data.encode()).decode()
         return data
     except:
         print("发送给web客户端的消息：\ndata数据错误")
@@ -54,11 +60,11 @@ def req_handle(verChar):
 
 app = Flask(__name__)
 try:
-    app.json.ensure_ascii = False               # 解决json中文乱码问题(flask 2.3.0以上)
+    app.json.ensure_ascii = False
 except:
-    app.config['JSON_AS_ASCII'] = False         # 解决json中文变Unicode编码(flask 2.2.5以下)
+    app.config['JSON_AS_ASCII'] = False
 connected_clients = set()
-loop = None  # 存储事件循环引用
+loop = None
 
 message = ""
 last_connect = None
@@ -79,10 +85,12 @@ def receive_data():
     while time.time() - start_time < 2:
         try:
             messages1 = message.split("------------")
-            newmessages0 = messages1[0]     # 返回的校验码
-            newmessages1 = messages1[1]     # 返回的状态码
-            newmessages2 = messages1[2]     # 返回的响应头
-            newmessages3 = messages1[3]     # 返回的响应体
+            if messages1 == ['']:
+                continue
+            newmessages0 = messages1[0]
+            newmessages1 = base64.b64decode(messages1[1]).decode()
+            newmessages2 = base64.b64decode(messages1[2]).decode()
+            newmessages3 = base64.b64decode(messages1[3]).decode()
             if verChar == newmessages0:
                 print("响应信息：")
                 print("Code：" + str(newmessages1))
@@ -96,6 +104,8 @@ def receive_data():
 
                 response = make_response(newmessages3, int(newmessages1))
                 for key, value in newheaders.items():
+                    if key == "transfer-encoding":
+                        continue
                     response.headers[key] = value
                 return response
         except:
@@ -107,11 +117,11 @@ def receive_data():
 
 async def handle_client(websocket, path):
     global message, last_connect
-    last_connect = websocket    # 保证消息只发送给最新连接的ws客户端
+    last_connect = websocket
     connected_clients.add(websocket)
 
     token = await websocket.recv()
-    if token != 'password=123456':   # ws连接密码
+    if token != 'password=123456':
         await websocket.close()
         return
 
@@ -123,11 +133,12 @@ async def handle_client(websocket, path):
     except:
         oriin = ""
     print("ws客户端连接成功，IP：{}，端口：{}，所在站点域名：{}".format(client_address[0], client_address[1], oriin))
-    await websocket.send("success!")
+    await websocket.send(base64.b64encode("success!".encode()).decode())
 
     while True:
         try:
             message = await websocket.recv()
+            message = base64.b64decode(message).decode()
         except websockets.exceptions.ConnectionClosed:
             connected_clients.remove(websocket)
             break
@@ -154,7 +165,6 @@ def start_flask_app():
 
 
 if __name__ == '__main__':
-    # 启动 Flask 和 WebSocket 服务器
     flask_thread = Thread(target=start_flask_app)
     flask_thread.start()
     start_ws_server()
