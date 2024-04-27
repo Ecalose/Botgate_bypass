@@ -40,10 +40,8 @@ function socket_start(){
                         headers[key] = value;
                     });
                 }
-                if (newdata1 === 'POST') {
-                    fetchOptions["method"] = 'POST';
-                    fetchOptions["body"] = newdata4;
-                }
+                fetchOptions["method"] = newdata1;
+                fetchOptions["body"] = newdata4;
                 if (Object.keys(headers).length > 0) {
                     fetchOptions.headers = new Headers(headers);
                 }
@@ -106,7 +104,7 @@ class CustomResponse:
         url = flow.request.url
         method = flow.request.method
         headers = flow.request.headers
-        newheaders = "|||".join([f"{key}: {value}" for key, value in headers.items() if key != "Req-flag"])
+        newheaders = "|||".join([f"Res-flag: {value}" if key == "Req-flag" else f"{key}: {value}" for key, value in headers.items()])
         content_type = flow.request.headers.get("Content-Type", "")
 
         if "application/json" in content_type:
@@ -156,7 +154,9 @@ class CustomResponse:
 
     def response(self, flow: http.HTTPFlow) -> None:
         global jstext, flag_req
-        if not flag_req:
+        resflag = flow.request.headers.get("Res-Flag", "")
+        flag_req = flow.request.headers.get("Req-flag", "")
+        if not flag_req and not resflag:
             content_type = flow.response.headers.get("Content-Type", "").lower()
             if flow.response.text:
                 if content_type.startswith("application/javascript"):
