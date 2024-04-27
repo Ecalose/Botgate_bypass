@@ -89,7 +89,7 @@ def receive_data():
                 newheaders = json.loads(newmessages2)
                 response = make_response(newmessages3, int(newmessages1))
                 for (key, value) in newheaders.items():
-                    if key == 'transfer-encoding':
+                    if key == 'transfer-encoding' or key == "content-encoding":
                         continue
                     response.headers[key] = value
                 return response
