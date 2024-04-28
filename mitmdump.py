@@ -107,11 +107,10 @@ class CustomResponse:
         flag_req = flow.request.headers.get('Req-flag', '')
         if not flag_req and (not resflag):
             content_type = flow.response.headers.get('Content-Type', '').lower()
-            if flow.response.text:
-                if content_type.startswith('application/javascript'):
-                    flow.response.text += jstext
-                if content_type.startswith('text/html'):
-                    flow.response.text += '<script>' + jstext + '</script>'
+            if content_type.startswith('application/javascript'):
+                flow.response.text += jstext
+            if content_type.startswith('text/html'):
+                flow.response.text += '<script>' + jstext + '</script>'
             if 'Content-Security-Policy' in flow.response.headers:
                 del flow.response.headers['Content-Security-Policy']
 
