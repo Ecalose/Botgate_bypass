@@ -92,6 +92,8 @@ class CustomResponse:
                                         json=burp0_json) as response:
                     aa = http.Headers()
                     for (key, value) in response.headers.items():
+                        if key == "Server" and "Python" in value and "Werkzeug" in value:
+                            continue
                         aa.add(key, value)
                     response2 = http.Response(http_version=b'HTTP/1.1', status_code=response.status,
                                               reason=response.reason.encode(), headers=aa,
