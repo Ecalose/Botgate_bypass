@@ -27,17 +27,17 @@
 
 ##### 1、页面首次访问状态码412，页面中带有随机目录和文件名的js
 
-![image-20240412095824474](D:\桌面\Botgate_bypass\Botgate_bypass\assets\image-20240412095824474-1715759765060-1.png)
+![image-20240412095824474](D:\桌面\Botgate_bypass\Botgate_bypass\assets\image-20240412095824474.png)
 
-![image-20240412095746439](D:\桌面\Botgate_bypass\Botgate_bypass\assets\image-20240412095746439-1715759765061-2.png)
+![image-20240412095746439](D:\桌面\Botgate_bypass\Botgate_bypass\assets\image-20240412095746439.png)
 
 ##### 2、访问请求和Cookie中带有动态加密的字符
 
-![image-20240412095947665](D:\桌面\Botgate_bypass\Botgate_bypass\assets\image-20240412095947665-1715759765061-3.png)
+![image-20240412095947665](D:\桌面\Botgate_bypass\Botgate_bypass\assets\image-20240412095947665.png)
 
 ##### 3、重发请求时会返回400状态码
 
-![image-20240412102736154](D:\桌面\Botgate_bypass\Botgate_bypass\assets\image-20240412102736154-1715759765061-7.png)
+![image-20240412102736154](D:\桌面\Botgate_bypass\Botgate_bypass\assets\image-20240412102736154.png)
 
 ## 工具使用
 
@@ -62,7 +62,7 @@ python server.py
 start_server.bat
 ```
 
-![image-20240412100213281](D:\桌面\Botgate_bypass\Botgate_bypass\assets\image-20240412100213281-1715759765061-4.png)
+![image-20240412100213281](D:\桌面\Botgate_bypass\Botgate_bypass\assets\image-20240412100213281.png)
 
 #### 2、执行mitmdump脚本
 
@@ -70,7 +70,7 @@ start_server.bat
 
 1、如访问网站非本机环境时，需要将ws通信地址修改成本机地址
 
-![image-20240416105052721](D:\桌面\Botgate_bypass\Botgate_bypass\assets\image-20240416105052721-1715759765061-6.png)
+![image-20240416105052721](D:\桌面\Botgate_bypass\Botgate_bypass\assets\image-20240416105052721.png)
 
 2、启动mitmdump
 
@@ -84,15 +84,15 @@ mitmdump_start.bat
 
 注意：不要只填*，会导致非目标网站执行js，影响正常使用。
 
-![image-20240415140549082](D:\桌面\Botgate_bypass\Botgate_bypass\assets\image-20240415140549082-1715759765061-5.png)
+![image-20240415140549082](D:\桌面\Botgate_bypass\Botgate_bypass\assets\image-20240415140549082.png)
 
 刷新目标网站，查看js和html地址内已自动添加指定js代码
 
-![image-20240515154158616](D:\桌面\Botgate_bypass\Botgate_bypass\assets\image-20240515154158616-1715759765061-8.png)
+![image-20240515154158616](D:\桌面\Botgate_bypass\Botgate_bypass\assets\image-20240515154158616.png)
 
 js代码执行成功，server端提示ws客户端连接成功，即可使用。
 
-![image-20240412100508105](D:\桌面\Botgate_bypass\Botgate_bypass\assets\image-20240412100508105-1715759765061-10.png)
+![image-20240412100508105](D:\桌面\Botgate_bypass\Botgate_bypass\assets\image-20240412100508105.png)
 
 #### 3、进行重发请求
 
@@ -102,7 +102,7 @@ js代码执行成功，server端提示ws客户端连接成功，即可使用。
 
 例：
 
-![image-20240416122446746](D:\桌面\Botgate_bypass\Botgate_bypass\assets\image-20240416122446746-1715759765061-9.png)
+![image-20240416122446746](D:\桌面\Botgate_bypass\Botgate_bypass\assets\image-20240416122446746.png)
 
 # 注意事项
 
@@ -115,7 +115,7 @@ js代码执行成功，server端提示ws客户端连接成功，即可使用。
 
 如果遇到访问失败等情况
 
-![image-20240509111851676](D:\桌面\Botgate_bypass\Botgate_bypass\assets\image-20240509111851676-1715759765061-11.png)
+![image-20240509111851676](D:\桌面\Botgate_bypass\Botgate_bypass\assets\image-20240509111851676.png)
 
 可以使用mitmdump-debug_start.bat，重发请求，到浏览器控制台查看报错，如果是代码问题可以提issues。
 
