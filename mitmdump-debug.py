@@ -46,6 +46,7 @@ function socket_start(){
     };
 }'''
 
+
 class CustomResponse:
 
     def __init__(self):
@@ -53,7 +54,8 @@ class CustomResponse:
 
     async def request(self, flow: http.HTTPFlow) -> None:
         global flag_req
-        flag_req = flow.request.headers.get('Req-flag', '')
+        headers6 = {k.lower(): v for k, v in flow.request.headers.items()}
+        flag_req = headers6.get('req-flag', '')
         if flag_req:
             await self.handle_delayed_request(flow)
 
@@ -62,7 +64,7 @@ class CustomResponse:
         method = flow.request.method
         headers = flow.request.headers
         newheaders = '|||'.join(
-            [f'Res-flag: {value}' if key == 'Req-flag' else f'{key}: {value}' for (key, value) in headers.items()])
+            [f'Res-flag: {value}' if key.lower() == 'req-flag' else f'{key}: {value}' for (key, value) in headers.items()])
         content_type = flow.request.headers.get('Content-Type', '')
         if 'application/json' in content_type:
             data1 = flow.request.text
@@ -102,8 +104,9 @@ class CustomResponse:
 
     def response(self, flow: http.HTTPFlow) -> None:
         global jstext
-        resflag = flow.request.headers.get('Res-Flag', '')
-        flag_req = flow.request.headers.get('Req-flag', '')
+        headers6 = {k.lower(): v for k, v in flow.request.headers.items()}
+        resflag = headers6.get('res-flag', '')
+        flag_req = headers6.get('req-flag', '')
         if not flag_req and (not resflag):
             content_type = flow.response.headers.get('Content-Type', '').lower()
             if content_type.startswith('application/javascript'):
