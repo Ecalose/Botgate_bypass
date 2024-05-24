@@ -21,20 +21,18 @@ def req_handle(verChar):
         hmethod = request.get_json()['method']
         hurl = request.get_json()['url']
         hurl = base64.b64decode(hurl).decode()
-        htype = request.get_json()['type']
         try:
             hheader = request.get_json()['header']
             hheader = base64.b64decode(hheader).decode()
         except:
             hheader = ''
         hdata = request.get_json()['data']
-        data = '{}[][][][][][]{}[][][][][][]{}[][][][][][]{}[][][][][][]{}'.format(
-            base64.b64encode(hmethod.encode()).decode(), base64.b64encode(hurl.encode()).decode(),
-            base64.b64encode(htype.encode()).decode(), hdata, base64.b64encode(hheader.encode()).decode())
+        data = '{}[][][][][][]{}[][][][][][]{}[][][][][][]{}'.format(base64.b64encode(hmethod.encode()).decode(),
+                                                                     base64.b64encode(hurl.encode()).decode(), hdata,
+                                                                     base64.b64encode(hheader.encode()).decode())
         print('请求信息：')
         print('Method：{}'.format(hmethod))
         print('URL：{}'.format(hurl))
-        print('Content-type：{}'.format(htype))
         print('Headers：{}'.format(hheader))
         print('Data：{}'.format(base64.b64decode(hdata).decode()))
         data = verChar + '------------' + str(data)
@@ -69,7 +67,7 @@ def receive_data():
         print('ws客户端未连接')
         return 'ws客户端未连接'
     start_time = time.time()
-    while time.time() - start_time < 2:
+    while time.time() - start_time < 3:
         try:
             messages1 = message.split('------------')
             if messages1 == ['']:
@@ -88,17 +86,17 @@ def receive_data():
                     return '网站访问失败，请检查\n1、URL是否正确！\n2、是否存在跨域访问\n3、网站是否能正常访问'
                 newheaders = json.loads(newmessages2)
                 response = make_response(newmessages3, int(newmessages1))
-                for (key, value) in newheaders.items():
-                    if key == 'transfer-encoding' or key == "content-encoding":
+                for key, value in newheaders.items():
+                    if key == 'transfer-encoding' or key == 'content-encoding':
                         continue
                     response.headers[key] = value
                 return response
         except:
             time.sleep(0.1)
     print(
-        '发送给web客户端的消息：\n发送给了ws客户端，但是没有返回！\n请检查：\n1、网站访问时间是否超过2秒\n2、ws客户端是否断开连接')
+        '发送给web客户端的消息：\n发送给了ws客户端，但是没有返回！\n请检查：\n1、网站访问时间是否超过3秒\n2、ws客户端是否断开连接')
     print('-----------------------------------------------------------------------------------------------')
-    return '发送给了ws客户端，但是没有返回！\n请检查：\n1、网站访问时间是否超过2秒\n、ws客户端是否断开连接'
+    return '发送给了ws客户端，但是没有返回！\n请检查：\n1、网站访问时间是否超过3秒\n、ws客户端是否断开连接'
 
 
 async def handle_client(websocket, path):
@@ -143,7 +141,7 @@ def start_ws_server():
 
 
 def start_flask_app():
-    app.run('127.0.0.1', port=3000)
+    app.run('127.0.0.1', port=12931)
 
 
 if __name__ == '__main__':

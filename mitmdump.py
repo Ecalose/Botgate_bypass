@@ -4,56 +4,10 @@ import time
 import base64
 
 flag_req = None
-jstext = '''if (typeof window.globalSocket121 !== 'undefined') {if (window.globalSocket121.readyState === WebSocket.CLOSED) {socket_start();}} else {socket_start();}
-function socket_start(){
-    const socket121 = new WebSocket('ws://127.0.0.1:8765');
-    window.globalSocket121 = socket121;
-    socket121.onopen = function(event) {socket121.send('password=123456');};
-    socket121.onmessage = function(event) {
-        const receivedMessage = atob(event.data);const parts = receivedMessage.split("------------");const varChars = parts[0];const reqdata = parts[1];
-        if (parts.length == 2) {
-            try {
-                let [newdata1, newdata2, newdata3, newdata4, newdata5] = reqdata.split("[][][][][][]");
-                newdata1 = atob(newdata1);newdata2 = atob(newdata2);newdata3 = atob(newdata3);newdata4 = atob(newdata4);newdata5 = atob(newdata5);
-                const fetchOptions = {};const headers = {};
-                if (newdata5 !== undefined && newdata5 !== null && newdata5 !== '') {
-                    const headersArray = newdata5.split('|||').map(header => header.trim().split(': '));
-                    headersArray.forEach(([key, value]) => {headers[key] = value;});
-                }
-                fetchOptions["method"] = newdata1;const allowedMethods = ['GET', 'HEAD', 'OPTIONS'];
-                if (!allowedMethods.includes(newdata1.toUpperCase())) {fetchOptions["body"] = newdata4;}
-                if (Object.keys(headers).length > 0) {fetchOptions.headers = new Headers(headers);}
-                fetch(newdata2, fetchOptions)
-                .then(response => {
-                    const statusCode = response.status.toString();const headersJson = {};
-                    response.headers.forEach((value, name) => {headersJson[name] = value;});
-                    headersString = JSON.stringify(headersJson);xydata = response.text();
-                    return xydata.then(xydata => {return {statusCode: statusCode,headersString: headersString,xydata: xydata};});
-                })
-                .then(({ statusCode, headersString, xydata }) => {
-                    var encoder = new TextEncoder();
-                    var encodedUint8Array = encoder.encode(xydata);
-                    var xydata = arrayBufferToBase64(encodedUint8Array);
-                    function arrayBufferToBase64(arrayBuffer) {
-                        var binary = '';
-                        var bytes = new Uint8Array(arrayBuffer);
-                        var len = bytes.byteLength;
-                        for (var i = 0; i < len; i++) {binary += String.fromCharCode(bytes[i]);}
-                        return binary;
-                    }
-                    socket121.send(btoa(varChars + '------------' + btoa(statusCode) + '------------' + btoa(headersString) + '------------' + btoa(xydata)));
-                })
-                .catch(error => {socket121.send(btoa(varChars + '------------' + btoa(0) + '------------' + btoa(0) + '------------' + btoa(0)));});
-            } catch (error) {socket121.send(btoa(varChars + '------------' + btoa(0) + '------------' + btoa(0) + '------------' + btoa(0)));}
-        }
-    };
-}'''
+jstext = '''function socket_start(){window.globalSocket121=new WebSocket("ws://127.0.0.1:8765"),window.globalSocket121.onopen=function(t){window.globalSocket121.send("password=123456")},window.globalSocket121.onmessage=function(t){t=atob(t.data).split("------------");const o=t[0];var a=t[1];if(2==t.length)try{var[e,d,n,r]=a.split("[][][][][][]"),s=(data_method=atob(e),data_url=atob(d),data_data=atob(n),data_headers=atob(r),{});const b={};void 0!==data_headers&&null!==data_headers&&""!==data_headers&&data_headers.split("|||||").map(t=>t.trim().split(": ")).forEach(([t,a])=>{b[t]=a}),s.method=data_method,["GET","HEAD","OPTIONS"].includes(data_method.toUpperCase())||(s.body=data_data),0<Object.keys(b).length&&(s.headers=new Headers(b)),fetch(data_url,s).then(t=>{const a=t.status.toString(),e={};return t.headers.forEach((t,a)=>{e[a]=t}),headersString=JSON.stringify(e),(xydata=t.text()).then(t=>({statusCode:a,headersString:headersString,xydata:t}))}).then(({statusCode:t,headersString:a,xydata:e})=>{e=function(t){for(var a="",e=new Uint8Array(t),o=e.byteLength,d=0;d<o;d++)a+=String.fromCharCode(e[d]);return a}((new TextEncoder).encode(e));window.globalSocket121.send(btoa(o+"------------"+btoa(t)+"------------"+btoa(a)+"------------"+btoa(e)))}).catch(t=>{window.globalSocket121.send(btoa(o+"------------"+btoa(0)+"------------"+btoa(0)+"------------"+btoa(0)))})}catch(t){window.globalSocket121.send(btoa(o+"------------"+btoa(0)+"------------"+btoa(0)+"------------"+btoa(0)))}}}void 0!==window.globalSocket121&&window.globalSocket121.readyState!==WebSocket.CLOSED||socket_start();'''
 
 
 class CustomResponse:
-
-    def __init__(self):
-        self.num = 0
 
     async def request(self, flow: http.HTTPFlow) -> None:
         global flag_req
@@ -63,42 +17,24 @@ class CustomResponse:
             await self.handle_delayed_request(flow)
 
     async def handle_delayed_request(self, flow: http.HTTPFlow) -> None:
-        url = flow.request.url
-        method = flow.request.method
-        headers = flow.request.headers
-        newheaders = '|||'.join(
-            [f'Res-flag: {value}' if key.lower() == 'req-flag' else f'{key}: {value}' for (key, value) in headers.items()])
-        content_type = flow.request.headers.get('Content-Type', '')
-        if 'application/json' in content_type:
-            data1 = flow.request.text
-            reqtype = 'json'
-        elif 'application/x-www-form-urlencoded' in content_type:
-            data1 = flow.request.text
-            reqtype = 'xform'
-        elif 'multipart/form-data' in content_type:
-            if 'form-data' not in str(flow.request.text):
-                data1 = ''
-            else:
-                data1 = flow.request.text
-            reqtype = 'formdata'
-        else:
-            reqtype = ''
-            data1 = ''
-        burp0_json = {'data': base64.b64encode(data1.encode()).decode(),
-                      'header': base64.b64encode(newheaders.encode()).decode(), 'method': str(method), 'type': reqtype,
-                      'url': base64.b64encode(url.encode()).decode()}
+        newheaders = '|||||'.join(
+            [f'Res-flag: {value}' if key.lower() == 'req-flag' else f'{key}: {value}' for key, value in
+             flow.request.headers.items()])
+        burp0_json = {'data': base64.b64encode(flow.request.text.encode()).decode(),
+                      'header': base64.b64encode(newheaders.encode()).decode(), 'method': str(flow.request.method),
+                      'url': base64.b64encode(flow.request.url.encode()).decode()}
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.post('http://127.0.0.1:3000/api',
+                async with session.post('http://127.0.0.1:12931/api',
                                         headers={'Content-Type': 'application/json;charset=UTF-8'},
                                         json=burp0_json) as response:
-                    aa = http.Headers()
-                    for (key, value) in response.headers.items():
-                        if key == "Server" and "Python" in value and "Werkzeug" in value:
+                    resp_headers = http.Headers()
+                    for key, value in response.headers.items():
+                        if key == 'Server' and 'Python' in value and ('Werkzeug' in value):
                             continue
-                        aa.add(key, value)
+                        resp_headers.add(key, value)
                     response2 = http.Response(http_version=b'HTTP/1.1', status_code=response.status,
-                                              reason=response.reason.encode(), headers=aa,
+                                              reason=response.reason.encode(), headers=resp_headers,
                                               content=await response.read(), trailers=None, timestamp_start=time.time(),
                                               timestamp_end=time.time())
                     flow.response = response2
