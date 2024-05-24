@@ -47,7 +47,7 @@
 python3环境
 所需的第三方库（pip install -r requirements.txt）
 注意：版本不能过低（会有未知BUG）
-注：程序默认使用到8765、8081、3000端口，如有端口冲突自行修改端口
+注：程序默认使用到8765、8081、12931端口，如有端口冲突自行修改端口
 ```
 
 装完三方库后，需要安装C:\Users\【用户名】\mitmproxy目录中mitmproxy-ca-cert.cer证书
@@ -75,7 +75,7 @@ start_server.bat
 2、启动mitmdump
 
 ```
-mitmdump -p 8081 -s mitmdump.py
+mitmdump -p 8081 -s mitmdump.py --ssl-insecure
 或
 mitmdump_start.bat
 ```
@@ -107,7 +107,7 @@ js代码执行成功，server端提示ws客户端连接成功，即可使用。
 # 注意事项
 
 ```
-1.默认网站响应超时时间2s
+1.默认网站响应超时时间3s
 2.上游代理需指定域名或IP
 3.批量请求时线程不要太大
 4.目标非本机环境（例如：模拟器、手机）下需修改【mitmdump.py】内的127.0.0.1:8765修改成x.x.x.x:8765
@@ -156,6 +156,3 @@ v1.0版本发布
 
 关注公众号【Tokaye安全】，发送加群。
 
-打赏（不是）
-
-![image-20240516143812536](./assets/image-20240516143812536.png)
