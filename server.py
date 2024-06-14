@@ -67,7 +67,7 @@ def receive_data():
         print('ws客户端未连接')
         return 'ws客户端未连接'
     start_time = time.time()
-    while time.time() - start_time < 3:
+    while time.time() - start_time < 5:
         try:
             messages1 = message.split('------------')
             if messages1 == ['']:
@@ -94,9 +94,9 @@ def receive_data():
         except:
             time.sleep(0.1)
     print(
-        '发送给web客户端的消息：\n发送给了ws客户端，但是没有返回！\n请检查：\n1、网站访问时间是否超过3秒\n2、ws客户端是否断开连接')
+        '发送给web客户端的消息：\n发送给了ws客户端，但是没有返回！\n请检查：\n1、网站访问时间是否超过5秒\n2、ws客户端是否断开连接')
     print('-----------------------------------------------------------------------------------------------')
-    return '发送给了ws客户端，但是没有返回！\n请检查：\n1、网站访问时间是否超过3秒\n、ws客户端是否断开连接'
+    return '发送给了ws客户端，但是没有返回！\n请检查：\n1、网站访问时间是否超过5秒\n、ws客户端是否断开连接'
 
 
 async def handle_client(websocket, path):
