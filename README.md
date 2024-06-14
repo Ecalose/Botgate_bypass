@@ -167,6 +167,73 @@ js代码执行成功，server端提示ws客户端连接成功，即可使用。
 
 3、使用mitmdump_debug.py，再次重发请求，查看浏览器控制台是否有报错
 
+#### 5、ws通信必须使用wss
+
+![image-20240614123829590](./assets/image-20240614123829590.png)
+
+##### 解决：
+
+1、申请一个域名和可信ssl证书
+
+2、nginx反代ws和server
+
+可以在本地指定host，本地使用nginx反代方式
+
+![image-20240614124234093](./assets/image-20240614124234093.png)
+
+![image-20240614124351223](./assets/image-20240614124351223.png)
+
+网站使用https
+
+配置反代：
+
+```
+location ^~ /ws {
+    proxy_pass http://127.0.0.1:8765; 
+    proxy_set_header Host $host; 
+    proxy_set_header X-Real-IP $remote_addr; 
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; 
+    proxy_set_header REMOTE-HOST $remote_addr; 
+    proxy_set_header Upgrade $http_upgrade; 
+    proxy_set_header Connection "upgrade"; 
+    proxy_set_header X-Forwarded-Proto $scheme; 
+    proxy_http_version 1.1; 
+    add_header X-Cache $upstream_cache_status; 
+    add_header Strict-Transport-Security "max-age=31536000"; 
+    add_header Cache-Control no-cache; 
+}
+location ^~ /api {
+    proxy_pass http://127.0.0.1:12931; 
+    proxy_set_header Host $host; 
+    proxy_set_header X-Real-IP $remote_addr; 
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; 
+    proxy_set_header REMOTE-HOST $remote_addr; 
+    proxy_set_header Upgrade $http_upgrade; 
+    proxy_set_header Connection "upgrade"; 
+    proxy_set_header X-Forwarded-Proto $scheme; 
+    proxy_http_version 1.1; 
+    add_header X-Cache $upstream_cache_status; 
+    add_header Strict-Transport-Security "max-age=31536000"; 
+    add_header Cache-Control no-cache; 
+}
+```
+
+![image-20240614124453259](./assets/image-20240614124453259.png)
+
+将【mitmdump.py】中
+
+```
+ws://192.168.137.1:8765
+替换为
+wss://你的域名/ws
+```
+
+```
+http://127.0.0.1:12931/api
+替换为
+https://你的域名/api
+```
+
 # 更新日志
 
 ##### 2024年6月14日
