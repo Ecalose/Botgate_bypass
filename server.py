@@ -2,12 +2,22 @@ import json
 import base64
 import asyncio
 import websockets
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, make_response
 from threading import Thread
-from urllib.parse import unquote
+from urllib.parse import urlparse
 import time
 import random
 import string
+
+
+app = Flask(__name__)
+try:
+    app.json.ensure_ascii = False
+except:
+    app.config['JSON_AS_ASCII'] = False
+loop = None
+message = ''
+all_wsclient = {}
 
 
 def generate_random_string(length=32):
@@ -37,35 +47,26 @@ def req_handle(verChar):
         print('Data：{}'.format(base64.b64decode(hdata).decode()))
         data = verChar + '------------' + str(data)
         data = base64.b64encode(data.encode()).decode()
-        return data
+        parsed_url = urlparse(hurl)
+        result = f"{parsed_url.scheme}://{parsed_url.netloc}"
+        return data, result
     except:
         print('发送给web客户端的消息：\ndata数据错误')
         print('-----------------------------------------------------------------------------------------------')
-        return None
-
-
-app = Flask(__name__)
-try:
-    app.json.ensure_ascii = False
-except:
-    app.config['JSON_AS_ASCII'] = False
-connected_clients = set()
-loop = None
-message = ''
-last_connect = None
+        return None, None
 
 
 @app.route('/api', methods=['POST'])
 def receive_data():
     verChar = str(generate_random_string())
     data = req_handle(verChar)
-    if not data:
+    if not data[0]:
         return 'data数据错误'
-    if loop is not None and last_connect:
-        loop.call_soon_threadsafe(send_data_to_client, last_connect, data)
-    else:
-        print('ws客户端未连接')
-        return 'ws客户端未连接'
+    try:
+        loop.call_soon_threadsafe(send_data_to_client, all_wsclient[data[1]], data)
+    except:
+        print('该站点：{}的ws客户端未连接或已断开'.format(data[1]))
+        return '该站点：{}\n的ws客户端未连接或已断开'.format(data[1])
     start_time = time.time()
     while time.time() - start_time < 5:
         try:
@@ -99,10 +100,8 @@ def receive_data():
     return '发送给了ws客户端，但是没有返回！\n请检查：\n1、网站访问时间是否超过5秒\n、ws客户端是否断开连接'
 
 
-async def handle_client(websocket, path):
-    global message, last_connect
-    last_connect = websocket
-    connected_clients.add(websocket)
+async def handle_client(websocket):
+    global message, all_wsclient
     token = await websocket.recv()
     if token != 'password=123456':
         await websocket.close()
@@ -113,6 +112,7 @@ async def handle_client(websocket, path):
         oriin = headers.get('Origin')
     except:
         oriin = ''
+    all_wsclient[oriin] = websocket
     print('ws客户端连接成功，IP：{}，端口：{}，所在站点域名：{}'.format(client_address[0], client_address[1], oriin))
     await websocket.send(base64.b64encode('success!'.encode()).decode())
     while True:
@@ -120,15 +120,17 @@ async def handle_client(websocket, path):
             message = await websocket.recv()
             message = base64.b64decode(message).decode()
         except websockets.exceptions.ConnectionClosed:
-            connected_clients.remove(websocket)
+            all_wsclient.pop(oriin)
+            print("站点{}的ws已断开".format(oriin))
             break
 
 
 def send_data_to_client(websocket, data):
     try:
-        asyncio.run_coroutine_threadsafe(websocket.send(data), loop)
+        asyncio.run_coroutine_threadsafe(websocket.send(data[0]), loop)
     except websockets.exceptions.ConnectionClosed:
-        connected_clients.remove(websocket)
+        all_wsclient.pop(data[1])
+        print("站点{}的ws已断开".format(data[1]))
 
 
 def start_ws_server():

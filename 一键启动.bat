@@ -1,2 +1,2 @@
-start start_server.bat
 start mitmdump_start.bat
+start start_server.bat
