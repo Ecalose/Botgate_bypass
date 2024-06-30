@@ -65,8 +65,8 @@ def receive_data():
     try:
         loop.call_soon_threadsafe(send_data_to_client, all_wsclient[data[1]], data)
     except:
-        print('该站点：{}的ws客户端未连接或已断开'.format(data[1]))
-        return '该站点：{}\n的ws客户端未连接或已断开'.format(data[1])
+        print('ws客户端已断开或未连接，目标站点：{}'.format(data[1]))
+        return 'ws客户端已断开或未连接，目标站点：{}'.format(data[1])
     start_time = time.time()
     while time.time() - start_time < 5:
         try:
@@ -120,8 +120,9 @@ async def handle_client(websocket):
             message = await websocket.recv()
             message = base64.b64decode(message).decode()
         except websockets.exceptions.ConnectionClosed:
-            all_wsclient.pop(oriin)
-            print("站点{}的ws已断开".format(oriin))
+            if oriin in all_wsclient:
+                all_wsclient.pop(oriin)
+                print("ws客户端已断开，目标站点：{}".format(oriin))
             break
 
 
@@ -129,8 +130,9 @@ def send_data_to_client(websocket, data):
     try:
         asyncio.run_coroutine_threadsafe(websocket.send(data[0]), loop)
     except websockets.exceptions.ConnectionClosed:
-        all_wsclient.pop(data[1])
-        print("站点{}的ws已断开".format(data[1]))
+        if data[1] in all_wsclient:
+            all_wsclient.pop(data[1])
+            print("ws客户端已断开，目标站点：{}".format(data[1]))
 
 
 def start_ws_server():
